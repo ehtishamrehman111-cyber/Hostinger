@@ -141,6 +141,18 @@ input,select,textarea{font-family:'Inter',sans-serif;transition:all var(--transi
 .hs-val{font-family:'Cormorant',serif;font-size:1.55rem;font-weight:700;color:var(--gold-lt);letter-spacing:.02em;line-height:1}
 .hs-chg{font-size:.7rem;font-weight:700;margin-top:5px}
 .hero-status{font-size:.72rem;color:var(--text3);margin-top:14px}
+.hero-tools{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+.view-chip{padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:.68rem;font-weight:600;letter-spacing:.04em}
+.view-chip:hover{border-color:var(--border2);color:var(--text)}
+.view-chip.on{border-color:var(--border3);background:rgba(201,168,76,.12);color:var(--gold-lt)}
+.quick-jump{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px}
+.jump-link{padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.jump-link:hover{border-color:var(--border2);color:var(--gold-lt)}
+body.compact .hero{padding:38px 0 26px}
+body.compact .hero-stats{gap:8px}
+body.compact .hstat{padding:12px 14px;min-width:130px}
+body.compact .card-body{padding:14px}
+body.compact .sec-divider{margin:20px 0 12px}
 
 /* ── SECTION ── */
 .sec-divider{display:flex;align-items:center;gap:14px;margin:28px 0 16px}
@@ -597,7 +609,7 @@ footer::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
           </svg>
         </div>
         <div class="brand-name">
-          <div class="bn-main">goldaratetoday<span style="color:var(--text2);font-weight:400">.org</span></div>
+          <div class="bn-main">goldratetoday<span style="color:var(--text2);font-weight:400">.xyz</span></div>
           <div class="bn-sub">Live Gold Prices — All Countries</div>
         </div>
       </div>
@@ -659,6 +671,18 @@ footer::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
       <div class="hstat"><div class="hs-lbl" id="h-rate-lbl">USD Rate</div><div class="hs-val shim" id="h-rate">—</div><div class="hs-chg" style="font-size:.6rem;color:var(--text3)">Exchange rate</div></div>
     </div>
     <div class="hero-status"><span class="flat" id="hero-status">⏳ Connecting to live markets…</span> · <span id="ts-hero">—</span></div>
+    <div class="hero-tools" aria-label="Layout options">
+      <span style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.12em">View</span>
+      <button class="view-chip on" id="view-comfortable" onclick="setDensity('comfortable',this)">Comfortable</button>
+      <button class="view-chip" id="view-compact" onclick="setDensity('compact',this)">Compact</button>
+    </div>
+    <div class="quick-jump" aria-label="Quick links">
+      <button class="jump-link" onclick="navTo('world')">World</button>
+      <button class="jump-link" onclick="navTo('charts')">Charts</button>
+      <button class="jump-link" onclick="navTo('calc')">Calculator</button>
+      <button class="jump-link" onclick="navTo('articles')">Guides</button>
+      <button class="jump-link" onclick="navTo('buy-gold')">Buy Gold</button>
+    </div>
   </section>
 
   <!-- WORLD PRICES -->
@@ -1492,6 +1516,14 @@ function navTo(id,btn){
   if(btn)btn.classList.add('on');
   const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});
 }
+function setDensity(mode,btn){
+  const isCompact=mode==='compact';
+  document.body.classList.toggle('compact',isCompact);
+  document.getElementById('view-comfortable')?.classList.toggle('on',!isCompact);
+  document.getElementById('view-compact')?.classList.toggle('on',isCompact);
+  try{localStorage.setItem('gr_density_mode',isCompact?'compact':'comfortable')}catch(_){ }
+  if(btn){btn.blur();}
+}
 function toast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);
@@ -1508,6 +1540,9 @@ CUR_COUNTRY=COUNTRIES.find(c=>c.code===defCode)||COUNTRIES.find(c=>c.code==='us'
 document.getElementById('curFlag').textContent=CUR_COUNTRY.flag;
 document.getElementById('curName').textContent=CUR_COUNTRY.name;
 document.getElementById('htmlRoot').setAttribute('dir',CUR_COUNTRY.dir);
+
+const savedDensity=localStorage.getItem('gr_density_mode');
+if(savedDensity==='compact')setDensity('compact');
 
 fetchPrices();
 setInterval(fetchPrices,120000);
